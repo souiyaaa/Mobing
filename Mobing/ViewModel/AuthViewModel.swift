@@ -1,84 +1,85 @@
-//
-//  AuthViewModel.swift
-//  Mobing
-//
-//  Created by Daffa Khoirul on 23/05/25.
-//
+
 
 import Foundation
 import FirebaseAuth
 import FirebaseDatabase
 
 @MainActor
-class AuthViewModel: ObservableObject{
-    
+class AuthViewModel: ObservableObject {
     @Published var user: User?
-    @Published var currentUser: UserModel
-    @Published var isSignedIn: Bool
+    @Published var isSigneIn: Bool
+    @Published var myUser: UserModel
     @Published var falseCredential: Bool
-    
-    init(){
+
+    private let repository: FirebaseAuthRepository
+
+    init(repository: FirebaseAuthRepository) {
+        self.repository = repository
         self.user = nil
-        self.isSignedIn = false
+        self.isSigneIn = false
         self.falseCredential = false
-        self.currentUser = UserModel()
+        self.myUser = UserModel()
         self.checkUserSession()
-        
     }
-    
-    func checkUserSession(){
-        self.user = Auth.auth().currentUser
-        self.isSignedIn = self.user != nil
+
+    func checkUserSession() {
+        self.user = repository.getCurrentUser()
+        self.isSigneIn = self.user != nil
     }
-    
-    func logout(){
-        do{
-            try Auth.auth().signOut()
-        }catch{
+
+    func signOut() {
+        do {
+            try repository.signOut()
+            self.user = nil
+            self.isSigneIn = false
+        } catch {
             print("Sign Out Error: \(error.localizedDescription)")
         }
     }
-    
+
     func signIn() async {
-        do{
-            _ = try await Auth.auth().signIn(withEmail: currentUser.email, password: currentUser.password)
+        do {
+            let result = try await repository.signIn(email: myUser.email, password: myUser.password)
+            let profile = try await repository.fetchUserProfile(userID: result.user.uid)
             DispatchQueue.main.async {
+                self.user = result.user
+                self.myUser = profile
                 self.falseCredential = false
+                self.isSigneIn = true
             }
-        }catch{
+        } catch {
             DispatchQueue.main.async {
                 self.falseCredential = true
             }
         }
     }
-    
-    func singUp() async {
-        let ref = Database.database().reference()
-        do {
-            let result = try await Auth.auth().createUser(withEmail: currentUser.email, password: currentUser.password)
-            let uid = result.user.uid
-            
-            // Simpan data user ke Realtime Database
-            let userData: [String: Any] = [
-                "id": uid,
-                "email": currentUser.email,
-                "name": currentUser.username,
-                "listOrders": currentUser.listOrders
-            ]
 
-            try await ref.child("users").child(uid).setValue(userData)
-            
+    func fetchUserProfile(userID: String) async {
+        do {
+            let profile = try await repository.fetchUserProfile(userID: userID)
             DispatchQueue.main.async {
-                self.falseCredential = false
+                self.myUser = profile
+            }
+        } catch {
+            print("Error fetching user profile: \(error.localizedDescription)")
+        }
+    }
+
+    func singUp() async {
+        do {
+            let result = try await repository.signUp(email: myUser.email, password: myUser.password)
+            var userToSave = myUser
+            userToSave.id = result.user.uid
+            try await repository.saveUserProfile(user: userToSave)
+
+            DispatchQueue.main.async {
                 self.user = result.user
-                self.isSignedIn = true
+                self.myUser = userToSave
+                self.isSigneIn = true
+                self.falseCredential = false
             }
         } catch {
             print("Sign Up Error: \(error.localizedDescription)")
-            DispatchQueue.main.async {
-                
-            }
-            
         }
     }
 }
