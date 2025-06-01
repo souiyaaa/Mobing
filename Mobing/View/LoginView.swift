@@ -12,14 +12,7 @@ struct LoginRegisterSheet: View {
     @Binding var showAuthSheet: Bool
     @EnvironmentObject var authVM: AuthViewModel
     @State var registerClicked: Bool = true
-    @State private var selectedHobbies: [String] = [] // Track selected hobbies
     
-    // Sample hobby data
-    let hobbies = [
-        "Reading", "Sports", "Music", "Gaming",
-        "Cooking", "Photography", "Traveling", "Art",
-        "Dancing", "Programming", "Movies", "Fitness"
-    ]
     var body: some View {
         ZStack {
             // Background

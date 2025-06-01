@@ -8,14 +8,16 @@
 import Foundation
 
 struct CarModel: Identifiable, Hashable, Codable {
-    var id = UUID()
+    var id: Int
     var name: String
     var brand: String
     var price: Double
     var totalDistance: Double
     var yearBuilt: Int
     var insentive: Double
-    var imageUrl: String
+    var imageURL: String
     var description: String
-    var sellerId: Int
+    var sellerID: Int
+    var isSold : Bool = false
 }
+

@@ -13,6 +13,8 @@
 		CF156E712DE0835A00292AAE /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = CF156E702DE0835A00292AAE /* FirebaseAuth */; };
 		CF156E732DE0835A00292AAE /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = CF156E722DE0835A00292AAE /* FirebaseCore */; };
 		CF156E752DE0835A00292AAE /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = CF156E742DE0835A00292AAE /* FirebaseDatabase */; };
+		CF7EFED62DEB288F00701037 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = CF7EFED52DEB288F00701037 /* FirebaseFirestore */; };
+		CF7EFED82DEB291800701037 /* FirebaseFirestoreCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = CF7EFED72DEB291800701037 /* FirebaseFirestoreCombine-Community */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -67,6 +69,8 @@
 				CF156E712DE0835A00292AAE /* FirebaseAuth in Frameworks */,
 				CF156E732DE0835A00292AAE /* FirebaseCore in Frameworks */,
 				CF156E6D2DE0835A00292AAE /* FirebaseAnalytics in Frameworks */,
+				CF7EFED62DEB288F00701037 /* FirebaseFirestore in Frameworks */,
+				CF7EFED82DEB291800701037 /* FirebaseFirestoreCombine-Community in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -94,6 +98,7 @@
 				CF156E352DE081FA00292AAE /* Mobing */,
 				CF156E432DE081FC00292AAE /* MobingTests */,
 				CF156E4D2DE081FC00292AAE /* MobingUITests */,
+				CF7EFED42DEB288F00701037 /* Frameworks */,
 				CF156E342DE081FA00292AAE /* Products */,
 			);
 			sourceTree = "<group>";
@@ -106,6 +111,13 @@
 				CF156E4A2DE081FC00292AAE /* MobingUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		CF7EFED42DEB288F00701037 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -133,6 +145,8 @@
 				CF156E702DE0835A00292AAE /* FirebaseAuth */,
 				CF156E722DE0835A00292AAE /* FirebaseCore */,
 				CF156E742DE0835A00292AAE /* FirebaseDatabase */,
+				CF7EFED52DEB288F00701037 /* FirebaseFirestore */,
+				CF7EFED72DEB291800701037 /* FirebaseFirestoreCombine-Community */,
 			);
 			productName = Mobing;
 			productReference = CF156E332DE081FA00292AAE /* Mobing.app */;
@@ -614,6 +628,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = CF156E6B2DE0835A00292AAE /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseDatabase;
+		};
+		CF7EFED52DEB288F00701037 /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CF156E6B2DE0835A00292AAE /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
+		CF7EFED72DEB291800701037 /* FirebaseFirestoreCombine-Community */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CF156E6B2DE0835A00292AAE /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = "FirebaseFirestoreCombine-Community";
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

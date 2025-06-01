@@ -13,10 +13,12 @@ struct MainView: View {
     var body: some View {
         TabView{
             HomeView().tabItem{
-                    Label("Home", systemImage: "house")
-                }
+                Label("Home", systemImage: "house")
+            } 
             
-            
+            ListCarView().tabItem{
+                Label("List Car", systemImage: "car")
+            }
             
         }
         .onAppear {
@@ -31,5 +33,5 @@ struct MainView: View {
 #Preview {
     MainView()
         .environmentObject(AuthViewModel(repository: FirebaseAuthRepository()))
-       
+    
 }

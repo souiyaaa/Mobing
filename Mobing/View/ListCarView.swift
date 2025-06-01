@@ -1,72 +1,99 @@
-//
-//  ListCarView.swift
-//  Mobing
-//
-//  Created by Daffa Khoirul on 29/05/25.
-//
-
-import SwiftUI
-
-//  ListCarView.swift
-
 import SwiftUI
 
 struct ListCarView: View {
-    let cars: [CarModel] = [
-        CarModel(
-            name: "Model S",
-            brand: "Tesla",
-            price: 79999,
-            totalDistance: 15000,
-            yearBuilt: 2022,
-            insentive: 2000,
-            imageUrl: "https://example.com/tesla.jpg",
-            description: "Electric vehicle",
-            sellerId: 1
-        ),
-        CarModel(
-            name: "Camry",
-            brand: "Toyota",
-            price: 29999,
-            totalDistance: 45000,
-            yearBuilt: 2020,
-            insentive: 0,
-            imageUrl: "https://example.com/camry.jpg",
-            description: "Sedan",
-            sellerId: 2
-        ),
-        CarModel(
-            name: "Mustang",
-            brand: "Ford",
-            price: 45999,
-            totalDistance: 20000,
-            yearBuilt: 2021,
-            insentive: 1500,
-            imageUrl: "https://example.com/mustang.jpg",
-            description: "Sports car",
-            sellerId: 3
-        )
-    ]
-    
+    @StateObject private var viewModel: CarListViewModel
+    @StateObject private var networkManager: NetworkManager
+
+    init() {
+        let sharedNetworkManager = NetworkManager()
+        _networkManager = StateObject(wrappedValue: sharedNetworkManager)
+        _viewModel = StateObject(wrappedValue: CarListViewModel(networkManager: sharedNetworkManager))
+    }
+
     var body: some View {
-        ScrollView {
-            LazyVStack(spacing: 16) {
-                ForEach(cars) { car in
-                    CarCardView(car: car)
-                        .padding(.horizontal)
+        NavigationStack {
+            VStack {
+
+                if viewModel.isLoading && viewModel.cars.isEmpty {
+                    ProgressView("Memuat Mobil...")
+                        .foregroundStyle(.white)
+                } else if viewModel.isShowingNoInternetMessage {
+                    VStack {
+                        Image(systemName: "wifi.slash")
+                            .font(.largeTitle)
+                            .foregroundStyle(.red)
+                            .padding(.bottom, 8)
+                        Text("Tidak ada koneksi internet.")
+                            .foregroundStyle(.white)
+                            .font(.headline)
+                        Text("Silakan periksa pengaturan jaringan Anda.")
+                            .foregroundStyle(.gray)
+                            .font(.subheadline)
+                        Button("Coba Lagi") {
+                            Task { await viewModel.fetchCars() }
+                        }
+                        .padding(.vertical, 10)
+                        .padding(.horizontal, 20)
+                        .background(Capsule().fill(Color.blue))
+                        .foregroundStyle(.white)
+                        .padding(.top, 20)
+                    }
+                } else if viewModel.cars.isEmpty {
+                    VStack {
+                        Image(systemName: "car.fill")
+                            .font(.largeTitle)
+                            .foregroundStyle(.gray)
+                            .padding(.bottom, 8)
+                        Text("Tidak ada mobil ditemukan.")
+                            .foregroundStyle(.white)
+                            .font(.headline)
+                        Text("Coba segarkan atau periksa lagi nanti.")
+                            .foregroundStyle(.gray)
+                            .font(.subheadline)
+                        Button("Segarkan") {
+                            Task { await viewModel.fetchCars() }
+                        }
+                        .padding(.vertical, 10)
+                        .padding(.horizontal, 20)
+                        .background(Capsule().fill(Color.green))
+                        .foregroundStyle(.white)
+                        .padding(.top, 20)
+                    }
+                }
+
+                if !viewModel.cars.isEmpty {
+                    ScrollView {
+                        LazyVStack(spacing: 16) {
+                            ForEach(viewModel.cars) { car in
+                                NavigationLink {
+                                    DetailCarView(carId: car.id)
+                                } label: {
+                                    CarCardView(car: car)
+                                        .padding(.horizontal)
+                                }
+                            }
+                        }
+                        .padding(.vertical)
+                    }
+                    .refreshable {
+                        print("🔄 Pull-to-refresh dipicu!")
+                        await viewModel.fetchCars()
+                    }
                 }
             }
-            .padding(.vertical)
+            .onAppear {
+                print("✅ ListCarView muncul - memanggil fetchCars")
+                Task { await viewModel.fetchCars() }
+            }
+            .navigationTitle("Mobil Tersedia")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbarColorScheme(.dark, for: .navigationBar)
         }
-        .navigationTitle("Available Cars")
     }
 }
 
 #Preview {
-    NavigationStack {
+    NavigationView {
         ListCarView()
     }
-}
-#Preview {
-    ListCarView()
 }

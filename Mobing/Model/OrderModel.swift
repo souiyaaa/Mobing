@@ -10,8 +10,8 @@ import Foundation
 struct OrderModel: Identifiable, Hashable, Codable {
     var id = UUID()
     var userId: String
-    var carId: String
-    var sellerId: String
+    var carId: Int
+    var sellerId: Int
     var date: Date
     var totalPrice: Double
     var address: String

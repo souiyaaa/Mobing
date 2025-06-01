@@ -23,7 +23,7 @@ struct MobingApp: App {
      }
     var body: some Scene {
         WindowGroup {
-            SplashScreenView()
+           SplashScreenView()
                  .environmentObject(authViewModel)
         }
     }
