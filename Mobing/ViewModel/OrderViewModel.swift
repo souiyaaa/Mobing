@@ -26,7 +26,7 @@ class OrderViewModel: ObservableObject {
         self.networkManager = networkManager
     }
     
-    func createOrder(carId: Int, sellerId: Int, totalPrice: Double, address: String, phone: String, date: Date) {
+    func createOrder(carId: Int, sellerId: Int, totalPrice: Double, address: String, phone: String, date: Date, name : String) {
         errorMessage = nil
         
         guard networkManager.isConnected else {
@@ -45,7 +45,9 @@ class OrderViewModel: ObservableObject {
             date: date,
             totalPrice: totalPrice,
             address: address,
-            phone: phone
+            phone: phone,
+            name: name,
+            
         )
         
         orderRepository.createOrder(order: newOrder) { error in

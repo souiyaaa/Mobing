@@ -14,6 +14,8 @@ struct PlaceOrderView: View {
 
     @State private var address: String = ""
     @State private var phone: String = ""
+    @State private var name: String = ""
+
     @State private var showingSuccessAlert = false
     @State private var showingErrorAlert = false
 
@@ -58,6 +60,8 @@ struct PlaceOrderView: View {
 
                     TextField("Phone Number", text: $phone)
                         .keyboardType(.phonePad)
+                    
+                    TextField("name", text: $name)
                         
                 }
 
@@ -69,7 +73,8 @@ struct PlaceOrderView: View {
                             totalPrice: car.price - car.insentive,
                             address: address,
                             phone: phone,
-                            date: Date()
+                            date: Date(),
+                            name: name
                         )
                     }) {
                         HStack {

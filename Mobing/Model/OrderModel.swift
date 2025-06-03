@@ -16,4 +16,5 @@ struct OrderModel: Identifiable, Hashable, Codable {
     var totalPrice: Double
     var address: String
     var phone: String
+    var name : String
 }

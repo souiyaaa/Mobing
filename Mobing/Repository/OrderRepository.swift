@@ -24,7 +24,8 @@ class FireBaseOrderRepository {
             "date": ISO8601DateFormatter().string(from: order.date),
             "totalPrice": order.totalPrice,
             "address": order.address,
-            "phone": order.phone
+            "phone": order.phone,
+            "name" : order.name
         ]
         
         let carRef = Database.database().reference().child("cars").child(String(order.carId))
