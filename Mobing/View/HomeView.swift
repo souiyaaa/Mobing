@@ -11,13 +11,16 @@ struct HomeView: View {
     @State private var selectedQuizType: String = ""
     let cornerRadius: CGFloat = 30
     @EnvironmentObject var authVM: AuthViewModel
-    
+    @Environment(\.dismiss) var dismiss
+    @Binding var showLogin: Bool
     var body: some View {
         VStack{
             Text("Home")
                 .font(.title)
             Button(action: {
                 self.authVM.signOut()
+                showLogin = true
+                dismiss()
             }) {
                 Text("Sign Out")
             }
@@ -25,7 +28,7 @@ struct HomeView: View {
     }
 }
 
-#Preview {
-    HomeView()
-        .environmentObject(AuthViewModel(repository: FirebaseAuthRepository()))
-}
+//#Preview {
+//    HomeView()
+//        .environmentObject(AuthViewModel(repository: FirebaseAuthRepository()))
+//}

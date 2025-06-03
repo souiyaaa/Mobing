@@ -7,8 +7,6 @@
 
 import SwiftUI
 
-import SwiftUI
-
 struct PlaceOrderView: View {
     @Environment(\.dismiss) var dismiss
     @StateObject var viewModel: OrderViewModel = OrderViewModel()
@@ -16,8 +14,9 @@ struct PlaceOrderView: View {
 
     @State private var address: String = ""
     @State private var phone: String = ""
-    @State private var showingConfirmation = false
-    
+    @State private var showingSuccessAlert = false
+    @State private var showingErrorAlert = false
+
     var body: some View {
         NavigationStack {
             Form {
@@ -28,14 +27,14 @@ struct PlaceOrderView: View {
                         Text("\(car.brand) \(car.name)")
                             .foregroundColor(.gray)
                     }
-                    
+
                     HStack {
                         Text("Price:")
                         Spacer()
                         Text("$\(car.price, specifier: "%.2f")")
                             .foregroundColor(.gray)
                     }
-                    
+
                     if car.insentive > 0 {
                         HStack {
                             Text("Discount:")
@@ -43,7 +42,7 @@ struct PlaceOrderView: View {
                             Text("-$\(car.insentive, specifier: "%.2f")")
                                 .foregroundColor(.green)
                         }
-                        
+
                         HStack {
                             Text("Total:")
                             Spacer()
@@ -52,16 +51,16 @@ struct PlaceOrderView: View {
                         }
                     }
                 }
-                
+
                 Section(header: Text("Delivery Information").foregroundColor(.cyan)) {
                     TextField("Delivery Address", text: $address)
-                        .foregroundColor(.white)
-                    
+                       
+
                     TextField("Phone Number", text: $phone)
                         .keyboardType(.phonePad)
-                        .foregroundColor(.white)
+                        
                 }
-                
+
                 Section {
                     Button(action: {
                         viewModel.createOrder(
@@ -72,38 +71,48 @@ struct PlaceOrderView: View {
                             phone: phone,
                             date: Date()
                         )
-                        showingConfirmation = true
                     }) {
                         HStack {
                             Spacer()
-                            Text("Confirm Order")
-                                .fontWeight(.bold)
+                            if viewModel.isLoading {
+                                ProgressView()
+                            } else {
+                                Text("Confirm Order")
+                                    .fontWeight(.bold)
+                            }
                             Spacer()
                         }
                     }
-                    .disabled(address.isEmpty || phone.isEmpty)
+                    .disabled(address.isEmpty || phone.isEmpty || viewModel.isLoading)
                 }
             }
             .navigationTitle("Place Order")
             .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
-                        dismiss()
-                    }
-                }
-            }
-            .alert("Order Placed", isPresented: $showingConfirmation) {
-                Button("OK") {
-                    dismiss()
-                }
-            } message: {
-                Text("Your order for \(car.brand) \(car.name) has been placed successfully!")
-            }
             .background(Color.black)
             .scrollContentBackground(.hidden)
+            .tint(.cyan)
+            .onReceive(viewModel.$errorMessage) { error in
+                if error != nil {
+                    showingErrorAlert = true
+                }
+            }
+            .onReceive(viewModel.$orderSuccess) { success in
+                if success {
+                    showingSuccessAlert = true
+                }
+            }
+            .alert("Order Failed", isPresented: $showingErrorAlert) {
+                Button("OK", role: .cancel) {}
+            } message: {
+                Text(viewModel.errorMessage ?? "Unknown error")
+            }
+            .alert("Order Placed", isPresented: $showingSuccessAlert) {
+                Button("OK") {
+                    viewModel.orderSuccess = false // Reset state
+                    dismiss()
+                }
+            }
         }
-        .tint(.cyan)
     }
 }
 

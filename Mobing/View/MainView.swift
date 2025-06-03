@@ -12,7 +12,7 @@ struct MainView: View {
     @State var showAuthSheet = false
     var body: some View {
         TabView{
-            HomeView().tabItem{
+            HomeView(showLogin: $showAuthSheet).tabItem{
                 Label("Home", systemImage: "house")
             } 
             

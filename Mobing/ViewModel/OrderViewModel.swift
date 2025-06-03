@@ -7,11 +7,13 @@
 
 import Foundation
 
-
 @MainActor
 class OrderViewModel: ObservableObject {
     @Published var orders: [OrderModel] = []
-    
+    @Published var errorMessage: String? = nil
+    @Published var isLoading: Bool = false
+    @Published var orderSuccess: Bool = false // Tambahkan ini
+
     private let orderRepository: FireBaseOrderRepository
     private let networkManager: NetworkManager
     private let currentUserId = "999" // Simulasi user ID
@@ -25,11 +27,15 @@ class OrderViewModel: ObservableObject {
     }
     
     func createOrder(carId: Int, sellerId: Int, totalPrice: Double, address: String, phone: String, date: Date) {
+        errorMessage = nil
         
         guard networkManager.isConnected else {
-            print("❌ Tidak bisa membuat order. Tidak ada koneksi internet.")
+            errorMessage = "Tidak bisa membuat order. Tidak ada koneksi internet."
+            print("❌ \(errorMessage!)")
             return
         }
+        
+        isLoading = true
         
         let newOrder = OrderModel(
             id: UUID(),
@@ -43,15 +49,17 @@ class OrderViewModel: ObservableObject {
         )
         
         orderRepository.createOrder(order: newOrder) { error in
-            if let error = error {
-                print("Failed to create order: \(error.localizedDescription)")
-            } else {
-                DispatchQueue.main.async {
+            DispatchQueue.main.async {
+                self.isLoading = false
+                if let error = error {
+                    self.errorMessage = error.localizedDescription
+                    self.orderSuccess = false // Pastikan success false saat error
+                } else {
                     self.orders.append(newOrder)
-                    print("✅ Order berhasil disimpan ke Firebase.")
+                    self.errorMessage = nil
+                    self.orderSuccess = true // Set success true
                 }
             }
         }
     }
 }
-
